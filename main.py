@@ -27,26 +27,26 @@ def main():
         X, y, test_size=0.2, random_state=42)
 
     ## grid search looking for best parameters for the estimator
-    param_grid = [
-        {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
-        {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
-    ]
+    # param_grid = [
+    #     {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
+    #     {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
+    # ]
 
-    clf = GridSearchCV(SVC(), param_grid, verbose = 5, n_jobs=-1)
-    clf.fit(train_data, train_label)
-    
-    print(clf.best_params_)
-    print(clf.best_estimator_)
-    
-
-    # ## creating pipline and fitting data into SVC
-    # print('Pre Learning...')
-    # clf = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.001, kernel='rbf'))
+    # clf = GridSearchCV(SVC(), param_grid, verbose = 5, n_jobs=-1)
     # clf.fit(train_data, train_label)
+    
+    # print(clf.best_params_) 
+    # print(clf.best_estimator_) ------------> SVC(C=1000, gamma=0.001. kernel='rbf')
+    
 
-    # ## finding accuracy of model with test data
-    # print("Fit Score")
-    # print(clf.score(test_data, test_label))
+    ## creating pipline and fitting data into SVC
+    print('Pre Learning...')
+    clf = make_pipeline(StandardScaler(), SVC(C=100, gamma=0.001))
+    clf.fit(train_data, train_label)
+
+    ## finding accuracy of model with test data
+    print("Fit Score")
+    print(clf.score(test_data, test_label))
         
 
 def pullTxtSamples(txtFiles):
@@ -58,7 +58,7 @@ def pullTxtSamples(txtFiles):
     
     for file in txtFiles:
         ## copies the file to pull samples
-        # print(file)
+        print(file)
         data = np.loadtxt(fname = file)
         file = os.path.splitext(file)[0]
         
