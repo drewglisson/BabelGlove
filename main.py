@@ -2,37 +2,52 @@ import random
 import numpy as np
 import glob
 import os
+import re
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
 
 def main():
     
     ## glob the list of txt files in the current dir to loop 
-    txtFiles = glob.glob("*.txt")
-    
+    txtFiles = glob.glob("data\*.txt")
+    # txtFiles2 = glob.glob("data_new\*.txt")
+
     ## pulling data from txt filess 
     X, y = pullTxtSamples(txtFiles)
+    # X2, yx = pullTxtSamples(txtFiles2)
 
-    # pullTxtSamples(txtFiles, samples)
-    # return
+    # X = np.append(X, X2, axis=0)
+    # y = np.append(y, yx)
 
-    ## slip data into training and test cases (9721 samples)
-    train_data = X[:7776]
-    train_label = y[:7776]
+    ## slip data into training and test cases 
+    train_data, test_data, train_label , test_label = train_test_split(
+        X, y, test_size=0.2, random_state=42)
 
-    test_data = X[7776:]
-    test_label = y[7776:]   
+    ## grid search looking for best parameters for the estimator
+    param_grid = [
+        {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
+        {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']},
+    ]
 
-    ## creating pipline and fitting data into SVC
-    print('Pre Learning...')
-    clf = make_pipeline(StandardScaler(), SVC(kernel='linear'))
+    clf = GridSearchCV(SVC(), param_grid, verbose = 5, n_jobs=-1)
     clf.fit(train_data, train_label)
-
-    ## finding accuracy of model with test data
-    print("Fit Score")
-    print(clf.score(test_data, test_label))
     
+    print(clf.best_params_)
+    print(clf.best_estimator_)
+    
+
+    # ## creating pipline and fitting data into SVC
+    # print('Pre Learning...')
+    # clf = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.001, kernel='rbf'))
+    # clf.fit(train_data, train_label)
+
+    # ## finding accuracy of model with test data
+    # print("Fit Score")
+    # print(clf.score(test_data, test_label))
+        
 
 def pullTxtSamples(txtFiles):
 
@@ -43,8 +58,9 @@ def pullTxtSamples(txtFiles):
     
     for file in txtFiles:
         ## copies the file to pull samples
-        data = np.loadtxt(fname = file)
         # print(file)
+        data = np.loadtxt(fname = file)
+        file = os.path.splitext(file)[0]
         
         while(1):
             ## goes thru the file pulling each sample 
@@ -55,6 +71,12 @@ def pullTxtSamples(txtFiles):
             ## get the group of samples, 11 values each
             temp = np.empty(11)
             temp = data[:11]
+            # if file == 
+            # print(temp[10])
+            # if (temp[10] < 100.0) | (temp[9] < 100.0) | (temp[8] < 100.0) | (temp[7] < 100.0) | (temp[6] < 100.0) :
+            #     print(temp)
+            #     return
+                
             temp = np.resize(temp, (1,11))
 
             ## delete the pulled sample from the file
@@ -63,17 +85,12 @@ def pullTxtSamples(txtFiles):
             ## add that sample to master array
             fullarray = np.append(fullarray, temp, axis=0)
 
-            ## update label array with file name 
-            y = np.append(y, os.path.splitext(file)[0])
-
-    # print(fullarray.shape)
-    # print(y.size)
+            ## update label array with file name             
+            y = np.append(y, file.replace('data\\',''))
 
     print("Complete\n")
-    ## create unison-shuffled arrays 
-    p = np.random.permutation(y.size)
 
-    return fullarray[p], y[p]
+    return fullarray, y
 
 if __name__ == '__main__':
     main()
