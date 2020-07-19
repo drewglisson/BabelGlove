@@ -2,7 +2,7 @@ import random
 import numpy as np
 import glob
 import os
-import re
+import pickle
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -41,14 +41,16 @@ def main():
 
     ## creating pipline and fitting data into SVC
     print('Pre Learning...')
-    clf = make_pipeline(StandardScaler(), SVC(C=100, gamma=0.001))
+    clf = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.001))
     clf.fit(train_data, train_label)
 
     ## finding accuracy of model with test data
     print("Fit Score")
     print(clf.score(test_data, test_label))
-        
 
+    pickle.dump(clf, open('trained_model.sav', 'wb'))
+    
+    
 def pullTxtSamples(txtFiles):
 
     print("Collecting samples from txt files...")
