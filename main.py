@@ -17,10 +17,6 @@ def main():
 
     ## pulling data from txt filess 
     X, y = pullTxtSamples(txtFiles)
-    # X2, yx = pullTxtSamples(txtFiles2)
-
-    # X = np.append(X, X2, axis=0)
-    # y = np.append(y, yx)
 
     ## slip data into training and test cases 
     train_data, test_data, train_label , test_label = train_test_split(
@@ -41,7 +37,7 @@ def main():
 
     ## creating pipline and fitting data into SVC
     print('Pre Learning...')
-    clf = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.001))
+    clf = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.001, kernel='rbf'))
     clf.fit(train_data, train_label)
 
     ## finding accuracy of model with test data
@@ -73,7 +69,7 @@ def pullTxtSamples(txtFiles):
             ## get the group of samples, 11 values each
             temp = np.empty(11)
             temp = data[:11]
-            # if file == 
+
             # print(temp[10])
             # if (temp[10] < 100.0) | (temp[9] < 100.0) | (temp[8] < 100.0) | (temp[7] < 100.0) | (temp[6] < 100.0) :
             #     print(temp)
